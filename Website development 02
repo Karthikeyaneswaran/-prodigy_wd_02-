@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .stopwatch-container {
+            text-align: center;
+        }
+
+        #display {
+            font-size: 2em;
+            margin: 10px;
+        }
+
+        button {
+            font-size: 1em;
+            margin: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+
+        #laps {
+            list-style-type: none;
+            padding: 0;
+        }
+    </style>
+    <title>Stopwatch App</title>
+</head>
+<body>
+    <div class="stopwatch-container">
+        <div id="display">00:00:00</div>
+        <button id="startBtn" onclick="start()">Start</button>
+        <button id="pauseBtn" onclick="pause()">Pause</button>
+        <button id="resetBtn" onclick="reset()">Reset</button>
+        <button id="lapBtn" onclick="lap()">Lap</button>
+        <ul id="laps"></ul>
+    </div>
+    <script>
+        let startTime;
+        let elapsedTime = 0;
+        let timerInterval;
+
+        const display = document.getElementById('display');
+        const startBtn = document.getElementById('startBtn');
+        const pauseBtn = document.getElementById('pauseBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const lapBtn = document.getElementById('lapBtn');
+        const lapsList = document.getElementById('laps');
+
+        function start() {
+            startTime = new Date().getTime() - elapsedTime;
+            timerInterval = setInterval(updateTime, 10);
+            toggleButtons(true);
+        }
+
+        function pause() {
+            clearInterval(timerInterval);
+            toggleButtons(false);
+        }
+
+        function reset() {
+            clearInterval(timerInterval);
+            elapsedTime = 0;
+            displayTime();
+            toggleButtons(false);
+            lapsList.innerHTML = '';
+        }
+
+        function lap() {
+            const lapTime = formatTime(elapsedTime);
+            const lapItem = document.createElement('li');
+            lapItem.textContent = lapTime;
+            lapsList.appendChild(lapItem);
+        }
+
+        function updateTime() {
+            elapsedTime = new Date().getTime() - startTime;
+            displayTime();
+        }
+
+        function displayTime() {
+            const formattedTime = formatTime(elapsedTime);
+            display.textContent = formattedTime;
+        }
+
+        function formatTime(time) {
+            const minutes = Math.floor(time / (1000 * 60));
+            const seconds = Math.floor((time % (1000 * 60)) / 1000);
+            const milliseconds = Math.floor((time % 1000) / 10);
+
+            return (
+                padNumber(minutes) +
+                ':' +
+                padNumber(seconds) +
+                ':' +
+                padNumber(milliseconds)
+            );
+        }
+
+        function padNumber(number) {
+            return number < 10 ? '0' + number : number;
+        }
+
+        function toggleButtons(running) {
+            startBtn.disabled = running;
+            pauseBtn.disabled = !running;
+            resetBtn.disabled = running;
+            lapBtn.disabled = !running;
+        }
+    </script>
+</body>
+</html>
